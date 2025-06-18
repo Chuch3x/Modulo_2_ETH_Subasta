@@ -37,6 +37,7 @@ contract Auction {
     // Eventos de la subasta
     event NewBid(address indexed bidder, uint256 amount);
     event AuctionEnded(address indexed winner, uint256 amount);
+    event AuctionExtended(uint256 newEndTime);
 
     // Constructor de la subasta
     constructor(address _benefactor, string memory _name, string memory _description, uint256 durationInSeconds){
@@ -57,6 +58,7 @@ contract Auction {
          // Si una oferta válida se realiza dentro de los últimos 10 minutos, el plazo de la subasta se extiende 10 minutos más.
         if (endTime - block.timestamp <= 10 minutes) {
             endTime +=  10 minutes;
+            emit AuctionExtended(endTime);
         }
 
         highestBidder = msg.sender;
@@ -103,6 +105,7 @@ contract Auction {
          if (!sent) {
             revert Auction_CantCompleteSending();
         }
+        emit AuctionEnded(highestBidder, highestAmmountBidded);
     }
 
      // Devuelve el ganador actual y su oferta
